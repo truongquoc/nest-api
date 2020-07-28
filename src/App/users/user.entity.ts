@@ -7,7 +7,7 @@ import {
   JoinColumn,
   BeforeInsert,
 } from 'typeorm';
-import { Base } from 'src/common/Base/base.entity';
+import { Base } from '../../common/Base/base.entity';
 import {
   IsString,
   IsOptional,

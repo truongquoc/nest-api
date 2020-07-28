@@ -1,5 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
-import { Base } from 'src/common/Base/base.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
+import { Base } from '../../common/Base/base.entity';
 import { IsOptional, IsNotEmpty, IsString } from 'class-validator';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { IsNotBlank } from 'src/Helper/validation/validation';
