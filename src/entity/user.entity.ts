@@ -7,7 +7,7 @@ import {
   JoinColumn,
   BeforeInsert,
 } from 'typeorm';
-import { Base } from '../../common/Base/base.entity';
+import { Base } from '../entity/base.entity';
 import {
   IsString,
   IsOptional,
@@ -23,8 +23,8 @@ import * as bcrypt from 'bcrypt';
 import { Type } from 'class-transformer';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { ApiProperty } from '@nestjs/swagger';
-import { Profile } from '../profile/profile.entity';
-import { Role } from '../roles/role.entity';
+import { Profile } from '../entity/profile.entity';
+import { Role } from '../entity/role.entity';
 const { CREATE, UPDATE } = CrudValidationGroups;
 export class Name {
   @IsString({ always: true })
@@ -96,7 +96,7 @@ export class User extends Base {
 
   @IsOptional({ groups: [UPDATE, CREATE] })
   @IsPhoneNumber('VN US')
-  @Column({ type: 'varchar', length: 12, nullable: true })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   phone: string;
 
   @ApiProperty({ example: '3' })

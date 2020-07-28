@@ -5,11 +5,11 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { Base } from '../../common/Base/base.entity';
+import { Base } from './base.entity';
 import { IsOptional, IsNotEmpty, IsString } from 'class-validator';
 import { CrudValidationGroups } from '@nestjsx/crud';
-import { IsNotBlank } from 'src/Helper/validation/validation';
-import { Category } from '../categories/category.entity';
+import { IsNotBlank } from '../Helper/validation/validation';
+import { Category } from './category.entity';
 const { CREATE, UPDATE } = CrudValidationGroups;
 @Entity('books')
 export class Book extends Base {

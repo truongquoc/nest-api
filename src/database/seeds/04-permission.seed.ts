@@ -1,6 +1,6 @@
 import { Factory, Seeder } from 'typeorm-seeding';
 import { Connection } from 'typeorm';
-import { PermissionsEntity } from '../../App/permission/permission.entity';
+import { PermissionsEntity } from '../../entity/permission.entity';
 
 export default class CreatePermissions implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {

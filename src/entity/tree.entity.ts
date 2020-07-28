@@ -1,4 +1,4 @@
-import { Base } from '../Base/base.entity';
+import { Base } from './base.entity';
 import { IsInt, IsOptional } from 'class-validator';
 import { Column } from 'typeorm';
 

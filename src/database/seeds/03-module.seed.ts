@@ -1,6 +1,6 @@
 import { Factory, Seeder } from 'typeorm-seeding';
 import { Connection } from 'typeorm';
-import { ModulesEntity } from '../../App/permission/module.entity';
+import { ModulesEntity } from '../../entity/module.entity';
 
 export default class CreateModules implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {

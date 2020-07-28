@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Book } from './book.entity';
+import { Book } from '../../entity/book.entity';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookRepository } from './book.repository';

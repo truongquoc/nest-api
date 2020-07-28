@@ -5,7 +5,7 @@ import {
   CrudRequest,
   ParsedBody,
 } from '@nestjsx/crud';
-import { Book } from './book.entity';
+import { Book } from '../../entity/book.entity';
 import {
   Controller,
   Get,

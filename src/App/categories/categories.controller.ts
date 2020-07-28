@@ -13,12 +13,12 @@ import {
   CrudRequest,
   ParsedBody,
 } from '@nestjsx/crud';
-import { Category } from './category.entity';
+import { Category } from '../../entity/category.entity';
 import { BaseController } from 'src/common/Base/base.controller';
 import { CategoriesService } from './categories.service';
 import { CategoryRepository } from './categories.repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TreeBase } from 'src/common/Treebase/tree.entity';
+import { TreeBase } from 'src/entity/tree.entity';
 import { TreeRepository } from 'typeorm';
 import { identity } from 'rxjs';
 

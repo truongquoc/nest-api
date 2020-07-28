@@ -20,7 +20,7 @@ import {
   ParsedBody,
 } from '@nestjsx/crud';
 import { SCondition } from '@nestjsx/crud-request';
-import { User } from './user.entity';
+import { User } from '../../entity/user.entity';
 import { UserService } from './users.service';
 import { UserRepository } from './user.repository';
 import { BaseController } from 'src/common/Base/base.controller';
@@ -134,6 +134,7 @@ export class UserController extends BaseController<User> {
   // @UseGuards(AuthGuard, ACGuard)
   async createOne(@ParsedRequest() req: CrudRequest, @ParsedBody() dto: User) {
     try {
+      console.log('here');
       const data = await this.base.createOneBase(req, dto);
       return data;
     } catch (error) {

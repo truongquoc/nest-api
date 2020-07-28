@@ -6,9 +6,9 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { Base } from '../../common/Base/base.entity';
-import { User } from '../users/user.entity';
-import { PermissionsEntity } from '../permission/permission.entity';
+import { Base } from './base.entity';
+import { User } from './user.entity';
+import { PermissionsEntity } from './permission.entity';
 @Entity('roles')
 export class Role extends Base {
   @PrimaryGeneratedColumn()

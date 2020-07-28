@@ -9,8 +9,8 @@ import {
   Tree,
   PrimaryColumn,
 } from 'typeorm';
-import { Book } from '../books/book.entity';
-import { TreeBase } from 'src/common/Treebase/tree.entity';
+import { Book } from './book.entity';
+import { TreeBase } from './tree.entity';
 
 @Entity('categories')
 @Tree('materialized-path')

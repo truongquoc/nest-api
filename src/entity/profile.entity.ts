@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
-import { Base } from '../../common/Base/base.entity';
+import { Base } from './base.entity';
 import { IsOptional, IsString, MaxLength } from 'class-validator';
 import { CrudValidationGroups } from '@nestjsx/crud';
-import { User } from '../users/user.entity';
+import { User } from './user.entity';
 const { CREATE, UPDATE } = CrudValidationGroups;
 
 @Entity('profiles')
@@ -14,7 +14,7 @@ export class Profile extends Base {
   @IsString({ always: true })
   @MaxLength(32, { always: true })
   @Column({ type: 'varchar', length: 32, nullable: true, default: null })
-  profile_url: string;
+  profileUrl: string;
 
   /** Relation to User */
 

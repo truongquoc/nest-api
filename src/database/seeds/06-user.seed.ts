@@ -1,6 +1,6 @@
 import { Factory, Seeder } from 'typeorm-seeding';
 import { Connection, getConnection } from 'typeorm';
-import { User } from '../../App/users/user.entity';
+import { User } from '../../entity/user.entity';
 
 export default class CreateRoles implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
@@ -24,6 +24,6 @@ export default class CreateRoles implements Seeder {
         },
       ])
       .execute();
-    await factory(User)({ roles: ['Member'] }).createMany(10);
+    await factory(User)({ roles: ['Member'] }).createMany(5);
   }
 }
