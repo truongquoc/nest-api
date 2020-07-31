@@ -60,7 +60,6 @@ export class AuthServices {
     return await sign(payload, process.env.SECRET_KEY, { expiresIn: '12h' });
   }
 
-  async register(data: RegisterDTO) {}
   async validateUser(usernameOrEmail: string, password: string): Promise<User> {
     let userPassword = '';
     let userByUsername;

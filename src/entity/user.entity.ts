@@ -6,6 +6,7 @@ import {
   ManyToOne,
   JoinColumn,
   BeforeInsert,
+  OneToMany,
 } from 'typeorm';
 import { Base } from '../entity/base.entity';
 import {
@@ -25,6 +26,7 @@ import { CrudValidationGroups } from '@nestjsx/crud';
 import { ApiProperty } from '@nestjs/swagger';
 import { Profile } from '../entity/profile.entity';
 import { Role } from '../entity/role.entity';
+import { Category } from './category.entity';
 const { CREATE, UPDATE } = CrudValidationGroups;
 export class Name {
   @IsString({ always: true })
@@ -124,6 +126,14 @@ export class User extends Base {
   )
   @JoinColumn({ name: 'roleId' })
   role: Role;
+
+  // @OneToMany(
+  //   type => Category,
+  //   category => category.user,
+  //   { eager: true },
+  // )
+  // categories: Category[];
+
   @BeforeInsert()
   async hashPassword() {
     const saltRounds = 12;

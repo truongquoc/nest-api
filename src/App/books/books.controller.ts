@@ -13,11 +13,13 @@ import {
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { BaseController } from 'src/common/Base/base.controller';
 import { BooksService } from './books.service';
 import { BookRepository } from './book.repository';
 import { Not, IsNull } from 'typeorm';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Crud({
   model: {
@@ -74,6 +76,7 @@ export class BooksController extends BaseController<Book> {
     }
   }
   @Override('deleteOneBase')
+  @UseGuards(AuthGuard)
   async softDelete(@ParsedRequest() req: CrudRequest): Promise<void> {
     const id = req.parsed.paramsFilter.find(
       f => f.field === 'id' && f.operator === '$eq',

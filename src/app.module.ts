@@ -8,6 +8,7 @@ import { BooksModule } from './App/books/books.module';
 import { AuthModule } from './App/auth/auth.module';
 import { AccessControlModule } from 'nest-access-control';
 import { roles } from './app.role';
+import { MulterModule } from '@nestjs/platform-express';
 import { CategoriesModule } from './App/categories/categories.module';
 //import { HttpErrorFilter } from './shared/http-error.filter';
 @Module({
@@ -19,6 +20,9 @@ import { CategoriesModule } from './App/categories/categories.module';
     CategoriesModule,
     TypeOrmModule.forRoot({
       autoLoadEntities: true,
+    }),
+    MulterModule.register({
+      dest: './uploads',
     }),
   ],
   controllers: [AppController],

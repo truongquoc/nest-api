@@ -8,16 +8,23 @@ import {
   JoinTable,
   Tree,
   PrimaryColumn,
+  ManyToOne,
 } from 'typeorm';
 import { Book } from './book.entity';
 import { TreeBase } from './tree.entity';
+import { IsNotEmpty, IsOptional } from 'class-validator';
+import { CrudValidationGroups } from '@nestjsx/crud';
+import { User } from './user.entity';
 
+const { CREATE, UPDATE } = CrudValidationGroups;
 @Entity('categories')
 @Tree('materialized-path')
 export class Category extends TreeBase {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @IsOptional({ groups: [UPDATE] })
+  @IsNotEmpty({ groups: [CREATE] })
   @Column({ type: 'text' })
   name: string;
 
@@ -45,4 +52,9 @@ export class Category extends TreeBase {
     },
   })
   book: Book[];
+  // @ManyToOne(
+  //   type => User,
+  //   user => user.categories,
+  // )
+  // user: User;
 }

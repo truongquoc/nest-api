@@ -8,6 +8,8 @@ import {
   InternalServerErrorException,
   Get,
   UseGuards,
+  Put,
+  Body,
 } from '@nestjs/common';
 import {
   CrudController,
@@ -27,8 +29,6 @@ import { BaseController } from 'src/common/Base/base.controller';
 import { Not, IsNull } from 'typeorm';
 import { ApiOkResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ACGuard, UseRoles } from 'nest-access-control';
-import { AuthGuard } from '../auth/auth.guard';
-import { AuthServices } from '../auth/auth.service';
 
 @Crud({
   model: {
@@ -112,6 +112,7 @@ export class UserController extends BaseController<User> {
 
   @Override('updateOneBase')
   async restore(@ParsedRequest() req: CrudRequest): Promise<void> {
+    console.log('update');
     const id = req.parsed.paramsFilter.find(
       f => f.field === 'id' && f.operator === '$eq',
     ).value;
@@ -125,7 +126,6 @@ export class UserController extends BaseController<User> {
         HttpStatus.NOT_FOUND,
       );
     }
-    console.log(data);
     //await this.repository.restore({ id });
   }
   @Override('createOneBase')
@@ -236,13 +236,28 @@ export class UserController extends BaseController<User> {
       );
     }
   }
-  @Override('updateOneBase')
-  async updateUser(@ParsedRequest() req: CrudRequest, @ParsedBody() dto: User) {
+  @Put('updateOne/:id')
+  async updateUser(@Body() dto: Partial<User>, @Param('id') id: string) {
     try {
-      const user = await this.base.updateOneBase(req, dto);
-      return user;
+      const result = await this.repository.findOne({ id });
+      if (!result) {
+        throw new HttpException(
+          {
+            message: 'Not Found',
+            status: HttpStatus.NOT_FOUND,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return await this.repository.update({ id }, dto);
     } catch (error) {
-      console.log(error);
+      throw new HttpException(
+        {
+          message: 'Internal Server Error',
+          status: HttpStatus.BAD_REQUEST,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }
