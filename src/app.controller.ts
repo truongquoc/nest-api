@@ -4,6 +4,8 @@ import {
   UseInterceptors,
   Post,
   UploadedFile,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -18,12 +20,8 @@ import fs = require('fs');
 // import {drive_v2} from 'googleapis';
 @Controller()
 export class AppController {
+  private path: string;
   constructor(private readonly appService: AppService) {}
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
 
   @Post()
   @UseInterceptors(
@@ -44,28 +42,76 @@ export class AppController {
   )
   uploadFile(@UploadedFile() file) {
     console.log(file);
-    const fileMetadata = {
-      name: 'photo.jpg',
-    };
-    const media = {
+    // this.metaData = {
+    //   mimeType: 'image/jpeg',
+    //   body: fs.createReadStream(file.path),
+    // };
+    this.path = file.path;
+
+    fs.readFile('credentials.json', (err, content: any) => {
+      if (err) return console.log('Error loading client secret file:', err);
+      // Authorize a client with credentials, then call the Google Drive API.
+      //authorize(JSON.parse(content), listFiles);
+      //authorize(JSON.parse(content), listFiles);
+      this.authorize(JSON.parse(content), auth => {
+        this.uploadImage(auth, file.path);
+      });
+      // authorize(JSON.parse(content), createFolder);
+      // authorize(JSON.parse(content), download);
+    });
+  }
+  uploadImage(auth, path) {
+    const drive = google.drive({ version: 'v3', auth });
+    const metaData = {
       mimeType: 'image/jpeg',
-      body: fs.createReadStream('uploads/photo.jpg'),
+      body: fs.createReadStream(path),
     };
-    // const drive = google.drive({version: 'v3', auth});
-    // google.drive.files.create(
-    //   {
-    //     resource: fileMetadata,
-    //     media: media,
-    //     fields: 'id',
-    //   },
-    //   function(err, file) {
-    //     if (err) {
-    //       // Handle error
-    //       console.error(err);
-    //     } else {
-    //       console.log('File Id: ', file.id);
-    //     }
-    //   },
-    // );
+    const fileMetadata = {
+      name: 'image.jpg',
+      parents: ['1Fz4i97zoLQYPvmKKZG27F07HIOX1mIrr'],
+    };
+
+    drive.files.create(
+      {
+        resource: fileMetadata,
+        media: metaData,
+        fields: 'id',
+      },
+      function(err, res) {
+        if (err) {
+          // Handle error
+          console.log(err);
+        } else {
+          console.log('File Id: ', res);
+        }
+      },
+    );
+  }
+  authorize(credentials: any, callback: any) {
+    const TOKEN_PATH = 'token.json';
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    const { client_secret, client_id, redirect_uris } = credentials.installed;
+    const oAuth2Client = new google.auth.OAuth2(
+      client_id,
+      client_secret,
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      redirect_uris[0],
+    );
+
+    // Check if we have previously stored a token.
+    fs.readFile(TOKEN_PATH, (err, token: any) => {
+      if (err) {
+        throw new HttpException(
+          {
+            message: 'Internal Server Error',
+            status: HttpStatus.BAD_REQUEST,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      oAuth2Client.setCredentials(JSON.parse(token));
+      callback(oAuth2Client); //list files and upload file
+      //callback(oAuth2Client, '0B79LZPgLDaqESF9HV2V3YzYySkE');//get file
+    });
   }
 }
