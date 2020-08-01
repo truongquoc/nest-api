@@ -79,12 +79,12 @@ export class CategoriesController extends BaseController<Category> {
   }
   @Override('createOneBase')
   @UsePipes(new ValidationPipe())
-  @UseGuards(AuthGuard, ACGuard)
-  @UseRoles({
-    resource: 'category',
-    action: 'create',
-    possession: 'any',
-  })
+  // @UseGuards(AuthGuard, ACGuard)
+  // @UseRoles({
+  //   resource: 'category',
+  //   action: 'create',
+  //   possession: 'any',
+  // })
   async createOne(
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: Category,
