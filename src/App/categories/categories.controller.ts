@@ -63,9 +63,6 @@ export class CategoriesController extends BaseController<Category> {
     super(repository);
   }
 
-  get base(): CrudController<Category> {
-    return this;
-  }
   getSlug(slug: string) {
     const now = moment();
 

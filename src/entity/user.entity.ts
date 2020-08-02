@@ -27,6 +27,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Profile } from '../entity/profile.entity';
 import { Role } from '../entity/role.entity';
 import { Category } from './category.entity';
+import { Tag } from './tag.entity';
 const { CREATE, UPDATE } = CrudValidationGroups;
 export class Name {
   @IsString({ always: true })
@@ -127,6 +128,11 @@ export class User extends Base {
   @JoinColumn({ name: 'roleId' })
   role: Role;
 
+  @OneToMany(
+    type => Tag,
+    Tag => Tag.author,
+  )
+  tags: Tag[];
   // @OneToMany(
   //   type => Category,
   //   category => category.user,

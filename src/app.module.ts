@@ -10,6 +10,7 @@ import { AccessControlModule } from 'nest-access-control';
 import { roles } from './app.role';
 import { MulterModule } from '@nestjs/platform-express';
 import { CategoriesModule } from './App/categories/categories.module';
+import { TagModule } from './App/tag/tag.module';
 //import { HttpErrorFilter } from './shared/http-error.filter';
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CategoriesModule } from './App/categories/categories.module';
     BooksModule,
     AuthModule,
     CategoriesModule,
+    TagModule,
     TypeOrmModule.forRoot({
       autoLoadEntities: true,
     }),
