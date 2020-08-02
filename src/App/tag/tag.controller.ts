@@ -36,6 +36,18 @@ import slugify from 'slugify';
     filter: [],
     join: {
       book: {},
+      author: {
+        eager: true,
+        exclude: [
+          'password',
+          'createdAt',
+          'deletedAt',
+          'username',
+          'email',
+          'gender',
+          'isActive',
+        ],
+      },
     },
   },
 })

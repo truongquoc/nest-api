@@ -9,6 +9,7 @@ import {
   Tree,
   PrimaryColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { Book } from './book.entity';
 import { TreeBase } from './tree.entity';
@@ -28,7 +29,7 @@ export class Category extends TreeBase {
   @Column({ type: 'text' })
   name: string;
 
-  @Column({ type: 'text', unique: true })
+  @Column({ type: 'text' })
   slug: string;
 
   @TreeChildren()
@@ -37,24 +38,15 @@ export class Category extends TreeBase {
   @TreeParent()
   parent: Category;
 
-  @ManyToMany(
+  @OneToMany(
     type => Book,
-    Book => Book.categories,
+    book => book.category,
   )
-  @JoinTable({
-    joinColumn: {
-      name: 'categorieId',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'bookId',
-      referencedColumnName: 'id',
-    },
-  })
-  book: Book[];
-  // @ManyToOne(
-  //   type => User,
-  //   user => user.categories,
-  // )
-  // user: User;
+  books: Book[];
+
+  @ManyToOne(
+    type => User,
+    user => user.categories,
+  )
+  user: User;
 }

@@ -20,6 +20,8 @@ import { BooksService } from './books.service';
 import { BookRepository } from './book.repository';
 import { Not, IsNull } from 'typeorm';
 import { AuthGuard } from '../auth/auth.guard';
+import moment = require('moment');
+import slugify from 'slugify';
 
 @Crud({
   model: {
@@ -50,10 +52,26 @@ export class BooksController extends BaseController<Book> {
   ) {
     super(repository);
   }
+
+  getSlug(slug: string) {
+    const now = moment();
+
+    return slugify(slug, {
+      replacement: '-', // replace spaces with replacement character, defaults to `-`
+      remove: undefined, // remove characters that match regex, defaults to `undefined`
+      lower: false, // convert to lower case, defaults to `false`
+      strict: false, // strip special characters except replacement, defaults to `false`
+      locale: 'vi',
+    });
+  }
   @Override('createOneBase')
   async CreateOne(@ParsedRequest() req: CrudRequest, @ParsedBody() dto: Book) {
     try {
-      return this.base.createOneBase(req, dto);
+      console.log('here', dto);
+      dto.slug = this.getSlug(dto.name);
+      const data = this.repository.create({ ...dto, tags: dto.tags });
+      return this.repository.save(data);
+      // return this.base.createOneBase(req, dto);
     } catch (error) {
       console.log(error);
     }
@@ -97,4 +115,10 @@ export class BooksController extends BaseController<Book> {
       throw new InternalServerErrorException('Error: Internal Server');
     }
   }
+
+  // @Override('getManyBase')
+  // @UseGuards(AuthGuard)
+  // async getMany(@ParsedRequest() req: CrudRequest) {
+  //   return this.base.getManyBase(req);
+  // }
 }

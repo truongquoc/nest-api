@@ -133,12 +133,12 @@ export class User extends Base {
     Tag => Tag.author,
   )
   tags: Tag[];
-  // @OneToMany(
-  //   type => Category,
-  //   category => category.user,
-  //   { eager: true },
-  // )
-  // categories: Category[];
+
+  @OneToMany(
+    type => Category,
+    category => category.user,
+  )
+  categories: Category[];
 
   @BeforeInsert()
   async hashPassword() {

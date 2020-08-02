@@ -5,6 +5,8 @@ import {
   ManyToMany,
   JoinTable,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Base } from './base.entity';
 import {
@@ -32,25 +34,18 @@ export class Book extends Base {
   name: string;
 
   @IsOptional({ groups: [UPDATE] })
-  @IsString({ always: true })
   @Column({ type: 'text' })
   slug: string;
 
-  @ManyToMany(
+  @Column({ type: 'int' })
+  categoryId: number;
+
+  @ManyToOne(
     type => Category,
-    Category => Category.book,
+    cate => cate.books,
   )
-  @JoinTable({
-    joinColumn: {
-      name: 'bookId',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'categoriesId',
-      referencedColumnName: 'id',
-    },
-  })
-  categories: Category[];
+  @JoinColumn({ name: 'categoryId' })
+  category: Category;
 
   @OneToMany(
     type => Price,
@@ -83,7 +78,7 @@ export class Book extends Base {
   @IsOptional({ groups: [UPDATE, CREATE] })
   @IsDateString()
   @Column({ type: 'date' })
-  publication: string;
+  publication: Date;
 
   @IsOptional({ groups: [UPDATE, CREATE] })
   @IsString({ always: true })
@@ -100,6 +95,11 @@ export class Book extends Base {
   @IsString({ always: true })
   @Column({ type: 'text' })
   isbn: string;
+
+  @IsOptional({ groups: [UPDATE] })
+  @IsNotEmpty({ groups: [CREATE] })
+  @Column({ type: 'text' })
+  format: Array<string>;
 
   @ManyToMany(
     type => Tag,

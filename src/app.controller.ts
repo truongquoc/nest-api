@@ -6,6 +6,8 @@ import {
   UploadedFile,
   HttpException,
   HttpStatus,
+  Res,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -21,46 +23,34 @@ import fs = require('fs');
 @Controller()
 export class AppController {
   private path: string;
+  private url: string;
   constructor(private readonly appService: AppService) {}
 
   @Post()
-  @UseInterceptors(
-    FileInterceptor('file', {
-      // storage: diskStorage({
-      //   destination: './uploads',
-      //   filename: (req, file, cb) => {
-      //     // Generating a 32 random chars long string
-      //     const randomName = Array(32)
-      //       .fill(null)
-      //       .map(() => Math.round(Math.random() * 16).toString(16))
-      //       .join('');
-      //     //Calling the callback passing the random name generated with the original extension name
-      //     cb(null, `${randomName}${extname(file.originalname)}`);
-      //   },
-      // }),
-    }),
-  )
-  uploadFile(@UploadedFile() file) {
-    console.log(file);
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file, @Res() res) {
     // this.metaData = {
     //   mimeType: 'image/jpeg',
     //   body: fs.createReadStream(file.path),
     // };
-    this.path = file.path;
 
-    fs.readFile('credentials.json', (err, content: any) => {
-      if (err) return console.log('Error loading client secret file:', err);
+    this.path = file.path;
+    let data;
+    await fs.readFile('credentials.json', async (err, content: any) => {
+      if (err) {
+        throw new InternalServerErrorException('Error client secret file');
+      }
       // Authorize a client with credentials, then call the Google Drive API.
       //authorize(JSON.parse(content), listFiles);
       //authorize(JSON.parse(content), listFiles);
-      this.authorize(JSON.parse(content), auth => {
-        this.uploadImage(auth, file.path);
+      await this.authorize(JSON.parse(content), async auth => {
+        // res.toJson(this.uploadImage(auth, file.path));
+        // console.log(await this.uploadImage(auth, file.path));
+        await this.uploadImage(auth, file.path, res);
       });
-      // authorize(JSON.parse(content), createFolder);
-      // authorize(JSON.parse(content), download);
     });
   }
-  uploadImage(auth, path) {
+  async uploadImage(auth, path, @Res() response) {
     const drive = google.drive({ version: 'v3', auth });
     const metaData = {
       mimeType: 'image/jpeg',
@@ -71,21 +61,48 @@ export class AppController {
       parents: ['1Fz4i97zoLQYPvmKKZG27F07HIOX1mIrr'],
     };
 
-    drive.files.create(
+    await drive.files.create(
       {
         resource: fileMetadata,
         media: metaData,
         fields: 'id',
       },
-      function(err, res) {
+      async function(err, res) {
         if (err) {
           // Handle error
-          console.log(err);
+          throw new HttpException(
+            {
+              message: 'Internal Server Error',
+              status: HttpStatus.BAD_REQUEST,
+            },
+            HttpStatus.BAD_REQUEST,
+          );
         } else {
-          console.log('File Id: ', res);
+          response.json(`https://drive.google.com/uc?id=${res.data.id}`);
         }
       },
     );
+
+    // await drive.files
+    //   .create({
+    //     resource: fileMetadata,
+    //     media: metaData,
+    //     fields: 'id',
+    //   })
+    //   .then(res => {
+    //     this.url = res.data.id;
+    //     // return res;
+    //     // res.json(`https://drive.google.com/uc?id=${res.data.id}`);
+    //   })
+    //   .catch(err => {
+    //     throw new HttpException(
+    //       {
+    //         message: 'Internal Server Error',
+    //         status: HttpStatus.BAD_REQUEST,
+    //       },
+    //       HttpStatus.BAD_REQUEST,
+    //     );
+    //   });
   }
   authorize(credentials: any, callback: any) {
     const TOKEN_PATH = 'token.json';

@@ -32,6 +32,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { ACGuard, UseRoles, UserRoles } from 'nest-access-control';
 import { User } from 'src/App/users/user.decorator';
 import { roles } from 'src/app.role';
+import { UserRepository } from '../users/user.repository';
 
 @Crud({
   model: {
@@ -59,6 +60,7 @@ export class CategoriesController extends BaseController<Category> {
     public service: CategoriesService,
     @InjectRepository(Category)
     private readonly repository: TreeRepository<Category>,
+    private readonly authorRepository: UserRepository,
   ) {
     super(repository);
   }
@@ -76,7 +78,7 @@ export class CategoriesController extends BaseController<Category> {
   }
   @Override('createOneBase')
   @UsePipes(new ValidationPipe())
-  // @UseGuards(AuthGuard, ACGuard)
+  @UseGuards(AuthGuard, ACGuard)
   // @UseRoles({
   //   resource: 'category',
   //   action: 'create',
@@ -87,9 +89,9 @@ export class CategoriesController extends BaseController<Category> {
     @ParsedBody() dto: Category,
     @User() user: any,
   ) {
-    // console.log(user.users);
-
-    // const author = `${user.users.firstName} ${user.users.lastName}`;
+    const author = await this.authorRepository.findOne({
+      where: { id: user.users.id },
+    });
     if (dto.parentId) {
       const parentObject = await this.repository.findOne({
         where: { id: dto.parentId },
@@ -118,7 +120,7 @@ export class CategoriesController extends BaseController<Category> {
       );
     }
     dto.slug = this.getSlug(dto.name); /*test case */
-    const result = this.repository.create(dto);
+    const result = this.repository.create({ ...dto, user: author });
     return await this.repository.save(result);
   }
 
