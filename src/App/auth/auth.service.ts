@@ -1,11 +1,11 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/App/users/user.entity';
+import { User } from '../../entity/user.entity';
 import { Repository } from 'typeorm';
-import { Role } from 'src/App/roles/role.entity';
+import { Role } from 'src/entity/role.entity';
 import { UserRepository } from 'src/App/users/user.repository';
 import * as bcrypt from 'bcrypt';
-import { LoginDTO } from './auth.dto';
+import { LoginDTO, RegisterDTO } from './auth.dto';
 import { sign } from 'jsonwebtoken';
 import { Payload } from 'src/types/payload';
 @Injectable()
@@ -50,6 +50,7 @@ export class AuthServices {
         gender: user.gender,
         birthday: user.birthday,
         phone: user.phone,
+        role: user.role.role,
       };
     } catch (error) {
       throw error;

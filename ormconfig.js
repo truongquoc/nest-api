@@ -1,6 +1,6 @@
 // this is required for seeding
 // when you want to execute npm run start:dev change dist to src
-
+require('dotenv').config();
 module.exports = [
   {
     name: 'default',
@@ -12,9 +12,7 @@ module.exports = [
     database: 'postgres',
     logging: true,
     synchronize: true,
-    dropSchmea: false,
     entities: ['dist/**/*.entity{.ts,.js}'],
-    migration: ['src/database/'],
     seeds: ['src/database/seeds/**/*.seed{.ts,.js}'],
     factories: ['src/database/factories/**/*.factory{.ts,.js}'],
   },

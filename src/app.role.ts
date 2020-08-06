@@ -2,12 +2,15 @@ import { RolesBuilder } from 'nest-access-control';
 
 export enum AppRoles {
   ADMIN_CREATE_ANY_USER = 'ADMIN_CREATE_ANY_USER ',
+  ADMIN_CREATE_ANY_CATEGORY = 'ADMIN_CREATE_ANY_CATEGORY ',
 }
 
 export const roles: RolesBuilder = new RolesBuilder();
 
 roles
-  .grant([AppRoles.ADMIN_CREATE_ANY_USER])
+  .grant(AppRoles.ADMIN_CREATE_ANY_USER)
   .createAny('user')
   .deleteAny('user')
-  .readAny('user');
+  .readAny('user')
+  .grant(AppRoles.ADMIN_CREATE_ANY_CATEGORY)
+  .createAny('category');
