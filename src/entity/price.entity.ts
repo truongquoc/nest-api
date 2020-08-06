@@ -19,13 +19,12 @@ export class Price extends Base {
   @IsOptional({ groups: [UPDATE] })
   @IsNotEmpty({ groups: [CREATE] })
   @IsInt()
-  @Column({ type: 'int', nullable: false })
-  format: number;
+  @Column({ type: 'text' })
+  format: string;
 
-  @IsOptional({ groups: [UPDATE] })
-  @IsNotEmpty({ groups: [CREATE] })
+  @IsOptional({ groups: [UPDATE, CREATE] })
   @IsDecimal()
-  @Column({ type: 'decimal', nullable: false })
+  @Column({ type: 'decimal' })
   price: number;
 
   @ManyToOne(

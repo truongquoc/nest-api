@@ -50,6 +50,7 @@ import { UserRepository } from '../users/user.repository';
     join: {
       user: {
         eager: true,
+        exclude: ['password', 'username', 'createdAt', 'updatedAt', 'gender'],
       },
     },
   },
@@ -110,7 +111,6 @@ export class CategoriesController extends BaseController<Category> {
     }
     const data = await this.repository.findOne({ where: { name: dto.name } });
     if (data) {
-      console.log(data);
       throw new HttpException(
         {
           message: 'Category already existed',

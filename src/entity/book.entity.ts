@@ -15,9 +15,11 @@ import {
   IsString,
   IsBoolean,
   IsDateString,
+  ValidateNested,
 } from 'class-validator';
 import { CrudValidationGroups } from '@nestjsx/crud';
 import { IsNotBlank } from '../Helper/validation/validation';
+import { Author } from './author.entity';
 import { Category } from './category.entity';
 import { Price } from './price.entity';
 import { Tag } from './tag.entity';
@@ -33,6 +35,8 @@ export class Book extends Base {
   @Column({ type: 'text' })
   name: string;
 
+  authorName: string;
+
   @IsOptional({ groups: [UPDATE] })
   @Column({ type: 'text' })
   slug: string;
@@ -41,12 +45,21 @@ export class Book extends Base {
   categoryId: number;
 
   @ManyToOne(
+    type => Author,
+    author => author.books,
+    {
+      eager: true,
+    },
+  )
+  author: Author;
+  @ManyToOne(
     type => Category,
     cate => cate.books,
   )
   @JoinColumn({ name: 'categoryId' })
   category: Category;
 
+  @IsOptional({ groups: [UPDATE] })
   @OneToMany(
     type => Price,
     Price => Price.book,
@@ -96,6 +109,8 @@ export class Book extends Base {
   @Column({ type: 'text' })
   isbn: string;
 
+  selectedTag: Array<string>;
+
   @IsOptional({ groups: [UPDATE] })
   @IsNotEmpty({ groups: [CREATE] })
   @Column({ type: 'text' })
@@ -105,6 +120,12 @@ export class Book extends Base {
     type => Tag,
     Tag => Tag.book,
   )
+  @IsOptional({ groups: [UPDATE] })
+  @IsNotEmpty({ groups: [CREATE] })
+  @IsString({ always: true })
+  @Column({ type: 'text', nullable: false })
+  image: string;
+
   @JoinTable({
     joinColumn: {
       name: 'bookId',

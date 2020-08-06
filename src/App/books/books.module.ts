@@ -10,9 +10,11 @@ import { User } from 'src/common/decorators/user.decorator';
 import { UserRepository } from '../users/user.repository';
 import { UserService } from '../users/users.service';
 import { Role } from 'src/entity/role.entity';
+import { Price } from 'src/entity/price.entity';
+import { Author } from 'src/entity/author.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Book]), AuthModule],
+  imports: [TypeOrmModule.forFeature([Book, Price, Author]), AuthModule],
   controllers: [BooksController],
   providers: [BooksService],
   exports: [BooksService],
