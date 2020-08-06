@@ -2,11 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
-<<<<<<< HEAD
-const port = 3000;
-=======
 const port = process.env.PORT || 3000;
->>>>>>> dev
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
