@@ -78,7 +78,7 @@ export class CategoriesController extends BaseController<Category> {
     return slugify(slug, {
       replacement: '-', // replace spaces with replacement character, defaults to `-`
       remove: undefined, // remove characters that match regex, defaults to `undefined`
-      lower: false, // convert to lower case, defaults to `false`
+      lower: true, // convert to lower case, defaults to `false`
       strict: false, // strip special characters except replacement, defaults to `false`
       locale: 'vi',
     });

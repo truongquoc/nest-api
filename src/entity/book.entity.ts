@@ -158,7 +158,7 @@ export class Book extends Base {
   )
   ranks: Rank[];
 
-  @Column()
+  @Column({ type: 'float', nullable: true })
   avgRank: number;
 
   @OneToMany(

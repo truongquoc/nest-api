@@ -11,6 +11,15 @@ export enum AppRoles {
   ADMIN_UPDATE_ANY_BOOK = 'ADMIN_UPDATE_ANY_BOOK',
   ADMIN_DELETE_ANY_BOOK = 'ADMIN_DELETE_ANY_BOOK',
 
+  ADMIN_READ_ANY_CATEGORY = 'ADMIN_READ_ANY_CATEGORY',
+  ADMIN_UPDATE_ANY_CATEGORY = 'ADMIN_UPDATE_ANY_CATEGORY',
+  ADMIN_DELETE_ANY_CATEGORY = 'ADMIN_DELETE_ANY_CATEGORY',
+
+  ADMIN_CREATE_ANY_TAG = 'ADMIN_CREATE_ANY_TAG',
+  ADMIN_READ_ANY_TAG = 'ADMIN_READ_ANY_TAG',
+  ADMIN_UPDATE_ANY_TAG = 'ADMIN_UPDATE_ANY_TAG',
+  ADMIN_DELETE_ANY_TAG = 'ADMIN_DELETE_ANY_TAG',
+
   MODERATOR_CREATE_ANY_CATEGORY = 'MODERATOR_CREATE_ANY_CATEGORY',
   MODERATOR_DELETE_OWN_CATEGORY = 'MODERATOR_DELETE_OWN_CATEGORY',
 }
@@ -40,4 +49,18 @@ roles
   .grant(AppRoles.MODERATOR_CREATE_ANY_CATEGORY)
   .createAny('category')
   .grant(AppRoles.MODERATOR_DELETE_OWN_CATEGORY)
-  .deleteOwn('category');
+  .deleteOwn('category')
+  .grant(AppRoles.ADMIN_READ_ANY_CATEGORY)
+  .readAny('category')
+  .grant(AppRoles.ADMIN_UPDATE_ANY_CATEGORY)
+  .updateAny('category')
+  .grant(AppRoles.ADMIN_DELETE_ANY_CATEGORY)
+  .deleteAny('category')
+  .grant(AppRoles.ADMIN_CREATE_ANY_TAG)
+  .createAny('tag')
+  .grant(AppRoles.ADMIN_UPDATE_ANY_TAG)
+  .updateAny('tag')
+  .grant(AppRoles.ADMIN_DELETE_ANY_TAG)
+  .deleteAny('tag')
+  .grant(AppRoles.ADMIN_READ_ANY_TAG)
+  .readAny('tag');
