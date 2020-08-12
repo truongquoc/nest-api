@@ -16,4 +16,19 @@ module.exports = [
     seeds: ['src/database/seeds/**/*.seed{.ts,.js}'],
     factories: ['src/database/factories/**/*.factory{.ts,.js}'],
   },
+
+  // {
+  //   name: 'default',
+  //   type: 'postgres',
+  //   host: 'localhost',
+  //   port: 5432,
+  //   username: 'postgres',
+  //   password: '123456',
+  //   database: 'bookshop',
+  //   logging: true,
+  //   synchronize: true,
+  //   entities: ['src/**/*.entity{.ts,.js}'],
+  //   seeds: ['src/database/seeds/**/*.seed{.ts,.js}'],
+  //   factories: ['src/database/factories/**/*.factory{.ts,.js}'],
+  // },
 ];

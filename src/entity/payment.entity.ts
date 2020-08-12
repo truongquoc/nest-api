@@ -2,8 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { Base } from './base.entity';
 import { IsOptional, IsNotEmpty, IsIn, IsDateString } from 'class-validator';
 import { CrudValidationGroups } from '@nestjsx/crud';
-import { enumToArray } from 'src/core/utils/helper';
-import { PaymentEnum } from 'src/common/enums/paymentMethod.enum';
+import { enumToArray } from '../core/utils/helper';
+import { PaymentEnum } from '../common/enums/paymentMethod.enum';
 const { CREATE, UPDATE } = CrudValidationGroups;
 @Entity('payment')
 export class Payment extends Base {

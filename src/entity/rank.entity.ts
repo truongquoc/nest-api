@@ -14,10 +14,13 @@ const { CREATE, UPDATE } = CrudValidationGroups;
 
 import { IsIn, IsOptional } from 'class-validator';
 import { Book } from './book.entity';
-@Entity('roles')
+@Entity('ranks')
 export class Rank extends Base {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @IsIn([1, 2, 3, 4, 5])
-  @Column({ type: 'int', primary: true })
+  @Column({ type: 'int' })
   rank: number;
 
   @ManyToOne(
