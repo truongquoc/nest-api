@@ -26,8 +26,9 @@ export class AuthController {
     return this.authService.login(data);
   }
 
-  @Post()
+  @Post('register')
+  @UsePipes(new ValidationPipe())
   async Register(@Body() data: RegisterDTO) {
-    //return this.authService.register(data);
+    return this.authService.register(data);
   }
 }

@@ -11,6 +11,7 @@ import { roles } from './app.role';
 import { MulterModule } from '@nestjs/platform-express';
 import { CategoriesModule } from './App/categories/categories.module';
 import { TagModule } from './App/tag/tag.module';
+import { OrderModule } from './App/order/order.module';
 //import { HttpErrorFilter } from './shared/http-error.filter';
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TagModule } from './App/tag/tag.module';
     AuthModule,
     CategoriesModule,
     TagModule,
+    OrderModule,
     TypeOrmModule.forRoot({
       autoLoadEntities: true,
     }),

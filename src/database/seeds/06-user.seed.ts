@@ -10,7 +10,6 @@ export default class CreateRoles implements Seeder {
       .into(User)
       .values([
         {
-          username: 'admin',
           email: 'ngotruongquoc0102@gmail.com',
           name: {
             first: 'Truong',

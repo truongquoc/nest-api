@@ -23,11 +23,14 @@ import { Author } from './author.entity';
 import { Category } from './category.entity';
 import { Price } from './price.entity';
 import { Tag } from './tag.entity';
+import { OrderItem } from './order_item.entity';
+import { Rank } from './rank.entity';
+import { Comment } from './comment.entity';
 const { CREATE, UPDATE } = CrudValidationGroups;
 @Entity('books')
 export class Book extends Base {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @IsOptional({ groups: [UPDATE] })
   @IsNotEmpty({ groups: [CREATE] })
@@ -36,6 +39,11 @@ export class Book extends Base {
   name: string;
 
   authorName: string;
+
+  @IsOptional({ groups: [UPDATE] })
+  @IsNotEmpty({ groups: [CREATE] })
+  @Column({ type: 'int' })
+  quantity: number;
 
   @IsOptional({ groups: [UPDATE] })
   @Column({ type: 'text' })
@@ -55,6 +63,7 @@ export class Book extends Base {
   @ManyToOne(
     type => Category,
     cate => cate.books,
+    { cascade: true, eager: true },
   )
   @JoinColumn({ name: 'categoryId' })
   category: Category;
@@ -90,13 +99,18 @@ export class Book extends Base {
 
   @IsOptional({ groups: [UPDATE, CREATE] })
   @IsDateString()
-  @Column({ type: 'date' })
+  @Column({ type: 'date', nullable: true })
   publication: Date;
 
   @IsOptional({ groups: [UPDATE, CREATE] })
   @IsString({ always: true })
   @Column({ type: 'text' })
   language: string;
+
+  @IsOptional({ groups: [UPDATE, CREATE] })
+  @IsString({ always: true })
+  @Column({ type: 'text', nullable: true })
+  publisher: string;
 
   @IsOptional({ groups: [UPDATE, CREATE] })
   @IsString({ always: true })
@@ -116,16 +130,16 @@ export class Book extends Base {
   @Column({ type: 'text' })
   format: Array<string>;
 
-  @ManyToMany(
-    type => Tag,
-    Tag => Tag.book,
-  )
   @IsOptional({ groups: [UPDATE] })
   @IsNotEmpty({ groups: [CREATE] })
   @IsString({ always: true })
   @Column({ type: 'text', nullable: false })
   image: string;
 
+  @ManyToMany(
+    type => Tag,
+    tag => tag.book,
+  )
   @JoinTable({
     joinColumn: {
       name: 'bookId',
@@ -137,4 +151,25 @@ export class Book extends Base {
     },
   })
   tags: Tag[];
+
+  @OneToMany(
+    type => Rank,
+    rank => rank.book,
+  )
+  ranks: Rank[];
+
+  @Column()
+  avgRank: number;
+
+  @OneToMany(
+    type => OrderItem,
+    order => order.book,
+  )
+  orderItems: OrderItem[];
+
+  @OneToMany(
+    type => Comment,
+    comment => comment.book,
+  )
+  comments: Comment[];
 }

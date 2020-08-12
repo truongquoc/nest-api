@@ -29,6 +29,7 @@ import { BaseController } from 'src/common/Base/base.controller';
 import { Not, IsNull } from 'typeorm';
 import { ApiOkResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ACGuard, UseRoles } from 'nest-access-control';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Crud({
   model: {
@@ -77,18 +78,31 @@ export class UserController extends BaseController<User> {
   //   return this;
   // }
   @Override('getManyBase')
+  @UseGuards(AuthGuard, ACGuard)
+  @UseRoles({
+    resource: 'user',
+    action: 'read',
+    possession: 'any',
+  })
   async getAll(@ParsedRequest() req: CrudRequest) {
-    console.log(req.parsed.sort);
     req.parsed.search.$and = [{ isActive: { $eq: true } }];
-
     try {
       return await this.base.getManyBase(req);
     } catch (error) {
       console.log(error);
     }
+    try {
+      return await this.base.getManyBase(req);
+    } catch (error) {}
   }
 
   @Override('deleteOneBase')
+  @UseGuards(AuthGuard, ACGuard)
+  @UseRoles({
+    resource: 'user',
+    action: 'delete',
+    possession: 'any',
+  })
   async softDelete(@ParsedRequest() req: CrudRequest): Promise<void> {
     const id = req.parsed.paramsFilter.find(
       f => f.field === 'id' && f.operator === '$eq',
@@ -131,7 +145,12 @@ export class UserController extends BaseController<User> {
   @Override('createOneBase')
   @ApiOkResponse({ description: 'User login' })
   @ApiUnauthorizedResponse({ description: 'Invalid credential' })
-  // @UseGuards(AuthGuard, ACGuard)
+  @UseGuards(AuthGuard, ACGuard)
+  @UseRoles({
+    resource: 'user',
+    action: 'create',
+    possession: 'any',
+  })
   async createOne(@ParsedRequest() req: CrudRequest, @ParsedBody() dto: User) {
     try {
       console.log('here');
@@ -180,7 +199,6 @@ export class UserController extends BaseController<User> {
   /** Get All user Inactive status */
   @Get('inactive')
   async getInactive(@ParsedRequest() req: CrudRequest) {
-    console.log('here');
     try {
       const data = this.repository.find({
         withDeleted: true,
@@ -192,6 +210,10 @@ export class UserController extends BaseController<User> {
     } catch (error) {
       throw new InternalServerErrorException('Error: Internal Server');
     }
+  }
+  @Get('/category/own')
+  async getOwn(@ParsedRequest() req: CrudRequest) {
+    console.log('here');
   }
   @Override('createManyBase')
   async createMany(

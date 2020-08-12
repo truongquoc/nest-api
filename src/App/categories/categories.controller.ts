@@ -7,6 +7,7 @@ import {
   UsePipes,
   UseGuards,
   Post,
+  InternalServerErrorException,
 } from '@nestjs/common';
 
 import {
@@ -23,7 +24,7 @@ import { CategoriesService } from './categories.service';
 import { CategoryRepository } from './categories.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TreeBase } from 'src/entity/tree.entity';
-import { TreeRepository } from 'typeorm';
+import { TreeRepository, Not, IsNull, Repository } from 'typeorm';
 import { identity } from 'rxjs';
 import moment = require('moment');
 import slugify from 'slugify';
@@ -33,16 +34,19 @@ import { ACGuard, UseRoles, UserRoles } from 'nest-access-control';
 import { User } from 'src/App/users/user.decorator';
 import { roles } from 'src/app.role';
 import { UserRepository } from '../users/user.repository';
-
+import { CheckPossessionRole } from 'src/Helper/role';
 @Crud({
   model: {
     type: Category,
   },
   params: {
     id: {
-      type: 'number',
-      field: 'id',
+      type: 'string',
+      field: 'slug',
       primary: true,
+    },
+    slug: {
+      type: 'string',
     },
   },
   query: {
@@ -62,6 +66,8 @@ export class CategoriesController extends BaseController<Category> {
     @InjectRepository(Category)
     private readonly repository: TreeRepository<Category>,
     private readonly authorRepository: UserRepository,
+    @InjectRepository(Category)
+    private readonly cateRepo: Repository<Category>,
   ) {
     super(repository);
   }
@@ -80,11 +86,11 @@ export class CategoriesController extends BaseController<Category> {
   @Override('createOneBase')
   @UsePipes(new ValidationPipe())
   @UseGuards(AuthGuard, ACGuard)
-  // @UseRoles({
-  //   resource: 'category',
-  //   action: 'create',
-  //   possession: 'any',
-  // })
+  @UseRoles({
+    resource: 'category',
+    action: 'create',
+    possession: 'any',
+  })
   async createOne(
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: Category,
@@ -126,13 +132,40 @@ export class CategoriesController extends BaseController<Category> {
 
   @Override('deleteOneBase')
   @UseGuards(AuthGuard, ACGuard)
-  // @UseRoles({
-  //   resource: 'category',
-  //   action: 'delete',
-  //   possession: 'any',
-  // })
-  async deleteOne(@ParsedRequest() req: CrudRequest) {
-    // const permission =
+  @UseRoles({
+    resource: 'category',
+    action: 'delete',
+    possession: 'own',
+  })
+  async deleteOne(
+    @ParsedRequest() req: CrudRequest,
+    @User() user,
+    @UserRoles() role,
+  ) {
+    const slug = req.parsed.paramsFilter.find(
+      f => f.field === 'slug' && f.operator === '$eq',
+    ).value;
+    // if (CheckPossessionRole(role, 'DELETE')) {
+    //   console.log('true');
+    // }
+    // console.log(await CheckPossessionRole(role, 'DELETE'));
+    if ((await CheckPossessionRole(role, 'DELETE')) == 'OWN') {
+      const data = await this.repository.findOne({
+        where: { slug },
+        relations: ['user'],
+      });
+      console.log(user);
+      if (user.users.id != data.user.id) {
+        throw new HttpException(
+          {
+            message: 'Unauthorized Permission',
+            status: HttpStatus.UNAUTHORIZED,
+          },
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+    }
+    return await this.repository.softDelete({ slug });
   }
   @Override('getManyBase')
   async getMany(@ParsedRequest() req: CrudRequest) {
@@ -142,6 +175,7 @@ export class CategoriesController extends BaseController<Category> {
   async getAll(@ParsedRequest() req: CrudRequest) {
     return await this.repository.findTrees();
   }
+
   @Get(':id')
   async getCategpry(
     @ParsedRequest() req: CrudRequest,
@@ -154,5 +188,19 @@ export class CategoriesController extends BaseController<Category> {
       where: { id },
       relations: ['children'],
     });
+  }
+
+  @Get('inactive/category')
+  async getInactive(@ParsedRequest() req: CrudRequest) {
+    try {
+      return await this.repository.find({
+        withDeleted: true,
+        where: {
+          deletedAt: Not(IsNull()),
+        },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException('Error: Internal Server');
+    }
   }
 }

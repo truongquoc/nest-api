@@ -7,6 +7,8 @@ import {
   JoinColumn,
   BeforeInsert,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Base } from '../entity/base.entity';
 import {
@@ -28,6 +30,9 @@ import { Profile } from '../entity/profile.entity';
 import { Role } from '../entity/role.entity';
 import { Category } from './category.entity';
 import { Tag } from './tag.entity';
+import { Address } from './address.entity';
+import { Order } from './order.entity';
+import { Comment } from './comment.entity';
 const { CREATE, UPDATE } = CrudValidationGroups;
 export class Name {
   @IsString({ always: true })
@@ -57,19 +62,6 @@ export class User extends Base {
     readonly: true,
   })
   email: string;
-
-  @IsOptional({ groups: [UPDATE] })
-  @IsNotEmpty({ groups: [CREATE] })
-  @IsString({ always: true })
-  @MaxLength(255, { always: true })
-  @Column({
-    type: 'varchar',
-    length: 125,
-    nullable: false,
-    unique: true,
-    readonly: true,
-  })
-  username: string;
 
   @Type(t => Name)
   @Column(type => Name)
@@ -107,6 +99,11 @@ export class User extends Base {
   @Column({ type: 'int', default: 3 })
   roleId: number;
 
+  @OneToMany(
+    type => Order,
+    order => order,
+  )
+  orders: Order[];
   /** Relation to Profile */
   @IsOptional({ groups: [UPDATE, CREATE] })
   @ValidateNested({ always: true })
@@ -139,6 +136,31 @@ export class User extends Base {
     category => category.user,
   )
   categories: Category[];
+
+  /**
+   * Relation User to Address
+   */
+  @ManyToMany(
+    type => Address,
+    adress => adress,
+  )
+  @JoinTable({
+    joinColumn: {
+      name: 'userId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'addressId',
+      referencedColumnName: 'id',
+    },
+  })
+  addresses: Address[];
+
+  @OneToMany(
+    type => Comment,
+    comment => comment.author,
+  )
+  comments: Comment[];
 
   @BeforeInsert()
   async hashPassword() {

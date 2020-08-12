@@ -14,6 +14,8 @@ import {
   HttpStatus,
   InternalServerErrorException,
   UseGuards,
+  Body,
+  Put,
 } from '@nestjs/common';
 import { BaseController } from 'src/common/Base/base.controller';
 import { BooksService } from './books.service';
@@ -25,13 +27,15 @@ import slugify from 'slugify';
 import { Tag } from 'src/entity/tag.entity';
 import { PriceRepository } from './price.repository';
 import { AuthorRepository } from './author.repository';
+import { ACGuard, UseRoles } from 'nest-access-control';
+import { BookDTO } from './book.dto';
 @Crud({
   model: {
     type: Book,
   },
   params: {
     id: {
-      type: 'uuid',
+      type: 'number',
       field: 'id',
       primary: true,
     },
@@ -48,7 +52,16 @@ import { AuthorRepository } from './author.repository';
         eager: true,
         exclude: ['createdAt', 'updatedAt'],
       },
+
       prices: {
+        eager: true,
+        exclude: ['createdAt', 'updatedAt'],
+      },
+      tags: {
+        eager: true,
+        exclude: ['createdAt', 'updatedAt'],
+      },
+      category: {
         eager: true,
         exclude: ['createdAt', 'updatedAt'],
       },
@@ -63,6 +76,7 @@ export class BooksController extends BaseController<Book> {
     private readonly repository: BookRepository,
     private readonly priceRepository: PriceRepository,
     private readonly authorRepository: AuthorRepository,
+    private readonly bookRepository: BookRepository,
     private connection: Connection,
   ) {
     super(repository);
@@ -80,12 +94,17 @@ export class BooksController extends BaseController<Book> {
     });
   }
   @Override('createOneBase')
+  @UseGuards(AuthGuard, ACGuard)
+  @UseRoles({
+    resource: 'book',
+    action: 'create',
+    possession: 'any',
+  })
   async CreateOne(
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: DeepPartial<Book>,
   ) {
-    console.log(dto.format);
-
+    console.log(dto);
     if (!dto.format['f1'] && !dto.format['f2'] && !dto.format['f3']) {
       throw new HttpException(
         {
@@ -96,7 +115,6 @@ export class BooksController extends BaseController<Book> {
       );
     }
     try {
-      console.log('here', dto);
       dto.slug = this.getSlug(dto.name);
       const manager = getManager();
       let query = '(';
@@ -104,11 +122,12 @@ export class BooksController extends BaseController<Book> {
         query += "'" + element + "',";
       });
       query = query.slice(0, -1) + ')';
-      console.log('query', query);
 
       const tags = await manager.query(
         `SELECT * from tags where name in ${query}`,
       );
+      console.log('tag', tags);
+
       const prices = [];
       Object.keys(dto.format).forEach(key => {
         if (dto.format[key] != null && dto.format[key] != '')
@@ -122,12 +141,11 @@ export class BooksController extends BaseController<Book> {
           author = this.authorRepository.create({ name: dto.authorName });
           this.authorRepository.save(author);
         }
-        console.log('price', prices);
         const createPrice = this.priceRepository.create(prices);
         await this.priceRepository.save(createPrice);
         const data = this.repository.create({
           ...dto,
-          tags: tags,
+          tags,
           prices: createPrice,
           author,
         });
@@ -144,7 +162,13 @@ export class BooksController extends BaseController<Book> {
 
       // return this.repository.save(data);
     } catch (error) {
-      console.log(error);
+      throw new HttpException(
+        {
+          messsage: 'Internal Server Error',
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -187,15 +211,112 @@ export class BooksController extends BaseController<Book> {
     }
   }
 
+  @Override('getOneBase')
+  async getOne(@ParsedRequest() req: CrudRequest) {
+    return await this.base.getOneBase(req);
+  }
   @Override('getManyBase')
+  // @UseGuards(AuthGuard, ACGuard)
+  // @UseRoles({
+  //   resource: 'book',
+  //   action: 'read',
+  //   possession: 'any',
+  // })
   async getMany(@ParsedRequest() req: CrudRequest) {
-    // try {
-    //   return await this.repository.find({
-    //     where: { available: true },
-    //     order: { createdAt: 'ASC' },
-    //     take: 1,
-    //   });
-    // } catch (error) {}
     return this.base.getManyBase(req);
+  }
+
+  @Override('replaceOneBase')
+  @UseGuards(AuthGuard, ACGuard)
+  @UseRoles({
+    resource: 'book',
+    action: 'update',
+    possession: 'any',
+  })
+  async updateOne(@ParsedRequest() req: CrudRequest, @ParsedBody() dto: Book) {
+    if (!dto.format['f1'] && !dto.format['f2'] && !dto.format['f3']) {
+      throw new HttpException(
+        {
+          message: 'Price is Empty',
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    try {
+      dto.slug = this.getSlug(dto.name);
+      const manager = getManager();
+      let query = '(';
+      dto.selectedTag.forEach(element => {
+        query += "'" + element + "',";
+      });
+      query = query.slice(0, -1) + ')';
+
+      const tags = await manager.query(
+        `SELECT * from tags where name in ${query}`,
+      );
+      console.log('tag', tags);
+
+      const prices = [];
+      Object.keys(dto.format).forEach(key => {
+        if (dto.format[key] != null && dto.format[key] != '')
+          prices.push({ price: dto.format[key], format: key });
+      });
+      try {
+        let author = await this.authorRepository.findOne({
+          where: { name: dto.authorName },
+        });
+        if (!author) {
+          author = this.authorRepository.create({ name: dto.authorName });
+          this.authorRepository.save(author);
+        }
+        const createPrice = this.priceRepository.create(prices);
+        await this.priceRepository.save(createPrice);
+        const data = this.repository.create({
+          ...dto,
+          tags,
+          prices: createPrice,
+          author,
+        });
+        return await this.repository.save(data);
+      } catch (error) {
+        throw new HttpException(
+          {
+            message: 'Internal Server Error',
+            status: HttpStatus.BAD_REQUEST,
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      // return this.repository.save(data);
+    } catch (error) {
+      throw new HttpException(
+        {
+          messsage: 'Internal Server Error',
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Put('update/:id')
+  @UseGuards(AuthGuard, ACGuard)
+  @UseRoles({
+    resource: 'book',
+    action: 'update',
+    possession: 'any',
+  })
+  async updateStatus(@Body() dto: BookDTO): Promise<Book> {
+    console.log('here', dto);
+    const data = await this.bookRepository.findOne({ where: { id: dto.id } });
+    data.available = dto.available;
+    return await this.bookRepository.save(data);
+  }
+
+  @Get('category/book')
+  async getByCategory() {
+    console.log('here');
   }
 }
