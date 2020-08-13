@@ -21,6 +21,7 @@ import { ACGuard, UserRoles } from 'nest-access-control';
 import { UserRepository } from '../users/user.repository';
 import moment = require('moment');
 import slugify from 'slugify';
+import { ApiTags } from '@nestjs/swagger';
 @Crud({
   model: {
     type: Tag,
@@ -51,6 +52,7 @@ import slugify from 'slugify';
     },
   },
 })
+@ApiTags('v1/tags')
 @Controller('api/v1/tags')
 export class TagController extends BaseController<Tag> {
   constructor(

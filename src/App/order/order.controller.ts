@@ -23,6 +23,7 @@ import { User } from 'src/common/decorators/user.decorator';
 import { BookRepository } from '../books/book.repository';
 import { getManager } from 'typeorm';
 import { OrderDTO } from './order.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Crud({
   model: {
@@ -40,6 +41,7 @@ import { OrderDTO } from './order.dto';
     join: {},
   },
 })
+@ApiTags('v1/orders')
 @Controller('api/v1/order')
 export class OrderController extends BaseController<Order> {
   constructor(

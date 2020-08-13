@@ -35,6 +35,7 @@ import { User } from 'src/App/users/user.decorator';
 import { roles } from 'src/app.role';
 import { UserRepository } from '../users/user.repository';
 import { CheckPossessionRole } from 'src/Helper/role';
+import { ApiTags } from '@nestjs/swagger';
 @Crud({
   model: {
     type: Category,
@@ -59,6 +60,7 @@ import { CheckPossessionRole } from 'src/Helper/role';
     },
   },
 })
+@ApiTags('v1/categories')
 @Controller('api/v1/categories')
 export class CategoriesController extends BaseController<Category> {
   constructor(

@@ -13,6 +13,7 @@ import { CategoriesModule } from './App/categories/categories.module';
 import { TagModule } from './App/tag/tag.module';
 import { OrderModule } from './App/order/order.module';
 //import { HttpErrorFilter } from './shared/http-error.filter';
+import { CommentModule } from './App/comment/comment.module';
 @Module({
   imports: [
     AccessControlModule.forRoles(roles),
@@ -28,6 +29,7 @@ import { OrderModule } from './App/order/order.module';
     MulterModule.register({
       dest: './uploads',
     }),
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

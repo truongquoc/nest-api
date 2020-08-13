@@ -1,7 +1,7 @@
 import { Factory, Seeder } from 'typeorm-seeding';
 import { Connection, getConnection } from 'typeorm';
 import { User } from '../../entity/user.entity';
-
+import * as bcrypt from 'bcrypt';
 export default class CreateRoles implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
     await getConnection()
@@ -15,7 +15,7 @@ export default class CreateRoles implements Seeder {
             first: 'Truong',
             last: 'Quoc',
           },
-          password: 'admin',
+          password: await bcrypt.hash('12345678', 12),
           gender: true,
           birthday: '1999/02/01',
           phone: '0764483638',

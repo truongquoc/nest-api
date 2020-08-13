@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToMany,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
 import { Base } from './base.entity';
 import { CrudValidationGroups } from '@nestjsx/crud';
 const { CREATE, UPDATE } = CrudValidationGroups;
