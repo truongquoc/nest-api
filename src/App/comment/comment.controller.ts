@@ -1,21 +1,14 @@
 import { User } from './../users/user.decorator';
 import { Controller, UseGuards, Get, Param } from '@nestjs/common';
-import {
-  Crud,
-  Override,
-  ParsedBody,
-  CrudRequest,
-  ParsedRequest,
-} from '@nestjsx/crud';
+import { Crud, Override, ParsedBody, ParsedRequest } from '@nestjsx/crud';
 import { Comment } from 'src/entity/comment.entity';
 import { BaseController } from 'src/common/Base/base.controller';
 import { CommentService } from './comment.service';
 import { CommentRepository } from './comment.repository';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { UserRepository } from '../users/user.repository';
 import { BookRepository } from '../books/book.repository';
 import { AuthGuard } from '../auth/auth.guard';
-import { getRepository } from 'typeorm';
 @Crud({
   model: {
     type: Comment,

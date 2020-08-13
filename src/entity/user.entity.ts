@@ -142,7 +142,7 @@ export class User extends Base {
    */
   @ManyToMany(
     type => Address,
-    adress => adress,
+    adress => adress.users,
   )
   @JoinTable({
     joinColumn: {
