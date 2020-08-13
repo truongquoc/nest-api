@@ -31,5 +31,6 @@ define(Book, (faker: typeof Faker, context: { payload?: Book; price: any }) => {
   book.format = payload.format;
   book.image = payload.image;
   book.prices = price;
+  book.viewer = payload.viewer;
   return book;
 });
