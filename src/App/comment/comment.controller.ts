@@ -15,26 +15,34 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { UserRepository } from '../users/user.repository';
 import { BookRepository } from '../books/book.repository';
 import { AuthGuard } from '../auth/auth.guard';
-import { getRepository, createQueryBuilder } from 'typeorm';
+import { getRepository } from 'typeorm';
 @Crud({
   model: {
     type: Comment,
   },
   params: {
-    id: {
+    bookId: {
       type: 'number',
       field: 'bookId',
+    },
+    id: {
+      field: 'id',
+      type: 'number',
       primary: true,
     },
   },
   query: {
+    join: {
+      users: { eager: true },
+      book: { eager: false },
+    },
     limit: 10,
     maxLimit: 50,
     alwaysPaginate: true,
   },
 })
 @ApiTags('v1/comments')
-@Controller('api/v1/comment')
+@Controller('api/v1/comment/:bookId/comments')
 export class CommentController extends BaseController<Comment> {
   constructor(
     public service: CommentService,
@@ -50,16 +58,21 @@ export class CommentController extends BaseController<Comment> {
     @User() user,
     @ParsedBody() body: Comment,
     @ParsedRequest() req,
+    @Param() param: any,
   ) {
     let avg = body.rank;
     let times = 1;
     const author = await this.userRepository.findOne({
       where: { id: user.users.id },
     });
+    console.log('body', param.bookId);
+    const { bookId } = param;
     const book = await this.bookRepository.findOne({
-      where: { id: body.bookId },
+      where: { id: bookId },
     });
-    const isExist = await this.service.findOneById(body.bookId);
+    console.log('book', body);
+
+    const isExist = await this.service.findOneById(bookId);
     if (isExist) {
       isExist.map((i: Comment) => {
         avg += i.rank;
@@ -76,20 +89,10 @@ export class CommentController extends BaseController<Comment> {
     const result = await this.repository.save(comment);
     if (result) {
       await this.bookRepository.update(
-        { id: body.bookId },
+        { id: bookId },
         { avgRank: avg / times },
       );
     }
-    return result;
-  }
-  // @UseGuards(AuthGuard)
-  @Get('/:bookId')
-  @ApiOperation({ summary: 'Retrieve many Comment by BookID' })
-  async getManyByBookId(@Param('bookId') bookId: number) {
-    const result = await this.repository.find({
-      where: { bookId },
-      relations: ['author'],
-    });
     return result;
   }
 }

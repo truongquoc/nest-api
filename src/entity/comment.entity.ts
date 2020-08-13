@@ -35,9 +35,6 @@ export class Comment extends Base {
   rank: number;
 
   @ApiProperty({ example: 1 })
-  @IsNotEmpty({ groups: [CREATE] })
-  @IsOptional({ groups: [UPDATE] })
-  @IsInt()
   @Column()
   bookId: number;
 
