@@ -27,6 +27,7 @@ module.exports = [
     database: 'bookshop',
     logging: true,
     synchronize: true,
+    // dropSchema: true,
     entities: ['dist/**/*.entity{.ts,.js}'],
     seeds: ['src/database/seeds/**/*.seed{.ts,.js}'],
     factories: ['src/database/factories/**/*.factory{.ts,.js}'],

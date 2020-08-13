@@ -8,7 +8,13 @@ export default class CreateModules implements Seeder {
       .createQueryBuilder()
       .insert()
       .into(ModulesEntity)
-      .values([{ module: 'USER' }, { module: 'BOOK' }, { module: 'PAYMENT' }])
+      .values([
+        { module: 'USER' },
+        { module: 'BOOK' },
+        { module: 'PAYMENT' },
+        { module: 'CATEGORY' },
+        { module: 'TAG' },
+      ])
       .execute();
   }
 }

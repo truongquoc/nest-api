@@ -17,6 +17,14 @@ export default class CreatePermissions implements Seeder {
         { methodId: 2, moduleId: 2 },
         { methodId: 3, moduleId: 2 },
         { methodId: 4, moduleId: 2 },
+        { methodId: 1, moduleId: 4 },
+        { methodId: 2, moduleId: 4 },
+        { methodId: 3, moduleId: 4 },
+        { methodId: 4, moduleId: 4 },
+        { methodId: 1, moduleId: 5 },
+        { methodId: 2, moduleId: 5 },
+        { methodId: 3, moduleId: 5 },
+        { methodId: 4, moduleId: 5 },
       ])
       .execute();
   }

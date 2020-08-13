@@ -52,6 +52,9 @@ export class Book extends Base {
   @Column({ type: 'int' })
   categoryId: number;
 
+  @Column({ type: 'int', nullable: true })
+  viewer: number;
+
   @ManyToOne(
     type => Author,
     author => author.books,
@@ -158,7 +161,7 @@ export class Book extends Base {
   )
   ranks: Rank[];
 
-  @Column()
+  @Column({ type: 'float', nullable: true })
   avgRank: number;
 
   @OneToMany(
