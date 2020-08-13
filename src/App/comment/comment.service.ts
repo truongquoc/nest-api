@@ -8,4 +8,8 @@ export class CommentService extends TypeOrmCrudService<Comment> {
   constructor(@InjectRepository(Comment) repo) {
     super(repo);
   }
+  async findOneById(bookId: number): Promise<Comment[]> {
+    const result = await this.repo.find({ where: { bookId } });
+    return result;
+  }
 }
