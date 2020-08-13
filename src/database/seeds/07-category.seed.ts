@@ -34,6 +34,7 @@ export default class CreateCategories implements Seeder {
         user: user[Math.floor(Math.random() * 6)],
       },
     ];
+
     const moreChild = [
       { name: 'Audio Books', user: user[Math.floor(Math.random() * 6)] },
       { name: 'Biography', user: user[Math.floor(Math.random() * 6)] },
@@ -209,7 +210,7 @@ export default class CreateCategories implements Seeder {
     for (let index = 0; index < moreChild.length; index++) {
       await factory(Category)({
         payload: moreChild[index],
-        parent: parentCategory[0],
+        parent: parentCategory[1],
       }).create();
     }
     /**
@@ -218,7 +219,7 @@ export default class CreateCategories implements Seeder {
     for (let index = 0; index < topAuthorChild.length; index++) {
       await factory(Category)({
         payload: topAuthorChild[index],
-        parent: parentCategory[0],
+        parent: parentCategory[2],
       }).create();
     }
     /**
@@ -227,7 +228,7 @@ export default class CreateCategories implements Seeder {
     for (let index = 0; index < bestSellingChild.length; index++) {
       await factory(Category)({
         payload: bestSellingChild[index],
-        parent: parentCategory[0],
+        parent: parentCategory[3],
       }).create();
     }
     /**
@@ -236,7 +237,7 @@ export default class CreateCategories implements Seeder {
     for (let index = 0; index < pupularChild.length; index++) {
       await factory(Category)({
         payload: pupularChild[index],
-        parent: parentCategory[0],
+        parent: parentCategory[4],
       }).create();
     }
     /**
@@ -245,7 +246,7 @@ export default class CreateCategories implements Seeder {
     for (let index = 0; index < chidrenChild.length; index++) {
       await factory(Category)({
         payload: chidrenChild[index],
-        parent: parentCategory[0],
+        parent: parentCategory[5],
       }).create();
     }
   }

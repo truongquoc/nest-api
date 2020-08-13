@@ -320,6 +320,10 @@ export default class implements Seeder {
     }
 
     const authors = await authorRepository.find();
+
+    /**
+     * Initial Books seeding data
+     */
     const books = [
       {
         name: 'Diary Of A Wimpy Kid (Book 1)',

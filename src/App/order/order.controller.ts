@@ -4,6 +4,8 @@ import {
   HttpException,
   HttpStatus,
   Get,
+  Post,
+  Body,
 } from '@nestjs/common';
 import { BaseController } from 'src/common/Base/base.controller';
 import { Order } from 'src/entity/order.entity';
@@ -101,8 +103,20 @@ export class OrderController extends BaseController<Order> {
     // console.log(index);
   }
 
-  @Get('price')
-  async getPriceByQuantiy(@ParsedBody() dto: OrderDTO) {
-    console.log(dto);
+  @Post('price')
+  async getPriceByQuantiy(@Body() dto: OrderDTO) {
+    const book = await this.bookRepository.findOne({
+      where: { id: dto.id },
+      relations: ['prices'],
+    });
+    if (book.prices[0].format == dto.format) {
+      return book.prices[0].price * dto.quantity;
+    }
+    if (book.prices[1].format == dto.format) {
+      return book.prices[1].price * dto.quantity;
+    }
+    if (book.prices[2].format == dto.format) {
+      return book.prices[2].price * dto.quantity;
+    }
   }
 }
