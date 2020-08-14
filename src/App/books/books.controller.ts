@@ -13,9 +13,12 @@ import {
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
-  UseGuards,
   Body,
   Put,
+  Patch,
+  UseGuards,
+  Param,
+  Post,
 } from '@nestjs/common';
 import { BaseController } from 'src/common/Base/base.controller';
 import { BooksService } from './books.service';
@@ -30,6 +33,8 @@ import { AuthorRepository } from './author.repository';
 import { ACGuard, UseRoles } from 'nest-access-control';
 import { BookDTO } from './book.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { User } from 'src/common/decorators/user.decorator';
+import { UserRepository } from '../users/user.repository';
 @Crud({
   model: {
     type: Book,
@@ -79,6 +84,7 @@ export class BooksController extends BaseController<Book> {
     private readonly priceRepository: PriceRepository,
     private readonly authorRepository: AuthorRepository,
     private readonly bookRepository: BookRepository,
+    private readonly userRepository: UserRepository,
     private connection: Connection,
   ) {
     super(repository);
@@ -320,5 +326,36 @@ export class BooksController extends BaseController<Book> {
   @Get('category/book')
   async getByCategory() {
     console.log('here');
+  }
+  @Post('/:id/favorites')
+  @UseGuards(AuthGuard)
+  async favoritesBook(@Param('id') id: number, @User() user) {
+    let checkFavorite = false;
+    const favorites = await this.bookRepository.findOne({
+      where: { id },
+      relations: ['favoritesBy'],
+    });
+    favorites.favoritesBy.map(async f => {
+      if (user.users.id === f.id) {
+        console.log('coo');
+        checkFavorite = true;
+      }
+    });
+    if (checkFavorite) {
+      const manager = getManager();
+      await manager.query(
+        `DELETE FROM books_favorites_by_users
+      WHERE "booksId" = ${id}`,
+      );
+      return { favorite: false };
+    }
+    const favoritedUser = await this.userRepository.findOne({
+      where: { id: user.users.id },
+    });
+    favorites.favoritesBy = [favoritedUser];
+    const result = this.bookRepository.create(favorites);
+    await this.bookRepository.save(result);
+
+    return { favorite: true };
   }
 }

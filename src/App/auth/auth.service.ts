@@ -3,6 +3,8 @@ import {
   HttpException,
   HttpStatus,
   InternalServerErrorException,
+  NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../entity/user.entity';
@@ -10,7 +12,7 @@ import { Repository } from 'typeorm';
 import { Role } from 'src/entity/role.entity';
 import { UserRepository } from 'src/App/users/user.repository';
 import * as bcrypt from 'bcrypt';
-import { LoginDTO, RegisterDTO } from './auth.dto';
+import { LoginDTO, RegisterDTO, ChangePwdDTO } from './auth.dto';
 import { sign } from 'jsonwebtoken';
 import { Payload } from 'src/types/payload';
 @Injectable()
@@ -123,5 +125,21 @@ export class AuthServices {
   }
   async comparePassword(attempt: string, password: string): Promise<boolean> {
     return await bcrypt.compare(attempt, password);
+  }
+
+  async changePwd(user: any, body: ChangePwdDTO) {
+    const checkUser = await this.userRepository.findOne({
+      where: { id: user.users.id },
+    });
+    if (!checkUser) {
+      return new NotFoundException('User not found');
+    } else if (!bcrypt.compareSync(body.oldPassword, checkUser.password)) {
+      return new BadRequestException('Password incorrect');
+    }
+    await this.userRepository.update(
+      { id: user.users.id },
+      { password: await bcrypt.hash(body.password, 12) },
+    );
+    return { status: true };
   }
 }
