@@ -27,7 +27,11 @@ import { UserService } from './users.service';
 import { UserRepository } from './user.repository';
 import { BaseController } from 'src/common/Base/base.controller';
 import { Not, IsNull } from 'typeorm';
-import { ApiOkResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ACGuard, UseRoles } from 'nest-access-control';
 import { AuthGuard } from '../auth/auth.guard';
 
@@ -65,6 +69,7 @@ import { AuthGuard } from '../auth/auth.guard';
     },
   },
 })
+@ApiTags('v1/users')
 @Controller('/api/v1/users')
 export class UserController extends BaseController<User> {
   constructor(

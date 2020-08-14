@@ -10,6 +10,8 @@ import { AuthServices } from './auth.service';
 import { LoginDTO, RegisterDTO } from 'src/App/auth/auth.dto';
 import { ValidationPipe } from 'src/shared/validation.pipe';
 import { AuthGuard } from './auth.guard';
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('v1/auth')
 @Controller('api/v1/auth')
 export class AuthController {
   constructor(private authService: AuthServices) {}

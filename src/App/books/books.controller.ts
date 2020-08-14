@@ -29,6 +29,7 @@ import { PriceRepository } from './price.repository';
 import { AuthorRepository } from './author.repository';
 import { ACGuard, UseRoles } from 'nest-access-control';
 import { BookDTO } from './book.dto';
+import { ApiTags } from '@nestjs/swagger';
 @Crud({
   model: {
     type: Book,
@@ -69,6 +70,7 @@ import { BookDTO } from './book.dto';
   },
   routes: {},
 })
+@ApiTags('v1/books')
 @Controller('/api/v1/books')
 export class BooksController extends BaseController<Book> {
   constructor(
@@ -94,12 +96,12 @@ export class BooksController extends BaseController<Book> {
     });
   }
   @Override('createOneBase')
-  @UseGuards(AuthGuard, ACGuard)
-  @UseRoles({
-    resource: 'book',
-    action: 'create',
-    possession: 'any',
-  })
+  // @UseGuards(AuthGuard, ACGuard)
+  // @UseRoles({
+  //   resource: 'book',
+  //   action: 'create',
+  //   possession: 'any',
+  // })
   async CreateOne(
     @ParsedRequest() req: CrudRequest,
     @ParsedBody() dto: DeepPartial<Book>,

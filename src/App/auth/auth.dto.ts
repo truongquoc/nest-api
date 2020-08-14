@@ -14,12 +14,18 @@ export class LoginDTO {
     type: String,
     description: 'username or email',
     required: true,
+    example: 'ngotruongquoc0102@gmail.com',
   })
   @IsNotEmpty({ groups: [CREATE] })
   email: string;
   @IsString()
   @IsNotEmpty({ groups: [CREATE] })
-  @ApiProperty({ type: String, description: 'password', required: true })
+  @ApiProperty({
+    type: String,
+    description: 'password',
+    required: true,
+    example: '123456',
+  })
   password: string;
 }
 export class RegisterDTO {

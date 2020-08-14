@@ -25,6 +25,8 @@ import { User } from 'src/common/decorators/user.decorator';
 import { BookRepository } from '../books/book.repository';
 import { getManager } from 'typeorm';
 import { OrderDTO } from './order.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { OrderItemRepository } from './orderItem.repository';
 
 @Crud({
   model: {
@@ -42,6 +44,7 @@ import { OrderDTO } from './order.dto';
     join: {},
   },
 })
+@ApiTags('v1/orders')
 @Controller('api/v1/order')
 export class OrderController extends BaseController<Order> {
   constructor(
@@ -49,6 +52,7 @@ export class OrderController extends BaseController<Order> {
     private readonly repository: OrderRepository,
     private readonly authorRepository: UserRepository,
     private readonly bookRepository: BookRepository,
+    private readonly orderItemRepository: OrderItemRepository,
   ) {
     super(repository);
   }
@@ -61,7 +65,17 @@ export class OrderController extends BaseController<Order> {
     @User() user,
   ) {
     const manager = getManager();
-    const orderItem = await this.bookRepository.findByIds([11, 2]);
+    const mapId = [];
+    console.log('user', user);
+    const author = await this.authorRepository.findOne({
+      where: { id: user.users.id },
+    });
+    dto.orderItems.forEach(item => {
+      mapId.push(item['id']);
+    });
+    console.log('map', mapId);
+
+    const orderItem = await this.bookRepository.findByIds(mapId);
     if (!orderItem) {
       throw new HttpException(
         {
@@ -79,7 +93,6 @@ export class OrderController extends BaseController<Order> {
       // data['prices'].forEach(price => {
       //   console.log(price);
       // });
-      console.log(order);
 
       // if(order['format'] == 'f1') {
 
@@ -91,14 +104,31 @@ export class OrderController extends BaseController<Order> {
       order['price'] = found.price;
     });
 
-    console.log('dto', dto);
     let total = 0;
     dto.orderItems.forEach(order => {
       total += order['price'] * order['quantity'];
     });
     dto['total'] = total;
+
+    // console.log('orderItem', orderItem);
+
     const order = this.repository.create(dto);
     await this.repository.save(order);
+    const orderdata = await this.repository.find({
+      take: 1,
+      order: { createdAt: 'DESC' },
+    });
+
+    dto.orderItems.forEach(async item => {
+      const orderOne = await this.bookRepository.findOne({
+        where: { id: item['id'] },
+      });
+
+      await manager.query(
+        `INSERT INTO order_item values(${item['quantity']}, ${orderOne.prices[0].price},${orderdata[0].id},${orderOne.id})`,
+      );
+    });
+
     // const index = orderItem.find(item => item.id == 12);
     // console.log(index);
   }
