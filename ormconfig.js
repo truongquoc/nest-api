@@ -28,7 +28,7 @@ module.exports = [
   //   logging: true,
   //   synchronize: true,
   //   // dropSchema: true,
-  //   entities: ['dist/**/*.entity{.ts,.js}'],
+  //   entities: ['d/**/*.entity{.ts,.js}'],
   //   seeds: ['src/database/seeds/**/*.seed{.ts,.js}'],
   //   factories: ['src/database/factories/**/*.factory{.ts,.js}'],
   // },
