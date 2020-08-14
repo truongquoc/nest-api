@@ -121,7 +121,7 @@ export class OrderController extends BaseController<Order> {
 
     // console.log('orderItem', orderItem);
 
-    const order = this.repository.create(dto);
+    const order = this.repository.create({ ...dto, user: author });
     await this.repository.save(order);
     const orderdata = await this.repository.find({
       take: 1,

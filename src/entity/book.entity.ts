@@ -130,7 +130,7 @@ export class Book extends Base {
 
   @IsOptional({ groups: [UPDATE] })
   @IsNotEmpty({ groups: [CREATE] })
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   format: Array<string>;
 
   @IsOptional({ groups: [UPDATE] })
