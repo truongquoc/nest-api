@@ -345,7 +345,7 @@ export class BooksController extends BaseController<Book> {
       const manager = getManager();
       await manager.query(
         `DELETE FROM books_favorites_by_users
-      WHERE "booksId" = ${id}`,
+      WHERE "booksId" = ${id} and "usersId" = '${user.users.id}' `,
       );
       return { favorite: false };
     }
