@@ -6,6 +6,9 @@ import {
   UsePipes,
   UseGuards,
   Put,
+  ExecutionContext,
+  Inject,
+  Req,
 } from '@nestjs/common';
 import { AuthServices } from './auth.service';
 import { LoginDTO, RegisterDTO, ChangePwdDTO } from 'src/App/auth/auth.dto';
@@ -13,10 +16,15 @@ import { ValidationPipe } from 'src/shared/validation.pipe';
 import { AuthGuard } from './auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from 'src/common/decorators/user.decorator';
+import { CONTEXT, RequestContext } from '@nestjs/microservices';
+import { Request } from 'express';
 @ApiTags('v1/auth')
 @Controller('api/v1/auth')
 export class AuthController {
-  constructor(private authService: AuthServices) {}
+  constructor(
+    private authService: AuthServices,
+    @Inject(CONTEXT) private ctx: RequestContext,
+  ) {}
 
   @Get()
   // @UseGuards(AuthGuard)
@@ -27,7 +35,8 @@ export class AuthController {
   @Post()
   @UsePipes(new ValidationPipe())
   async Login(@Body() data: LoginDTO) {
-    return this.authService.login(data);
+    const result = await this.authService.login(data);
+    return result;
   }
 
   @Post('register')

@@ -50,6 +50,7 @@ export class AuthServices {
         lastName: user.name.last,
         role: user.role.role,
       };
+
       return {
         token: await this.signPayload(payload),
         id: user.id,

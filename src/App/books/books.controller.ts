@@ -35,6 +35,8 @@ import { BookDTO } from './book.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserRepository } from '../users/user.repository';
+import { UserSigned } from 'src/common/decorators/userSigned.decorator';
+import { RolesGuard } from '../auth/request';
 @Crud({
   model: {
     type: Book,
@@ -219,9 +221,22 @@ export class BooksController extends BaseController<Book> {
     }
   }
 
-  @Override('getOneBase')
-  async getOne(@ParsedRequest() req: CrudRequest) {
-    return await this.base.getOneBase(req);
+  // @Override('getOneBase')
+  @Get('getone/:slug')
+  @UseGuards(RolesGuard, ACGuard)
+  async getOne(@Param('slug') slug: string, @UserSigned() user) {
+    const book = await this.bookRepository.findOne({ where: { slug: slug } });
+    if (user) {
+      const manager = getManager();
+      const recently = await manager.query(
+        `INSERT INTO recent_book values('${book.id}', '${user.id}')`,
+      );
+    }
+
+    return book;
+
+    // await manager.query(`INSERT INTO users_recemt_view_books values(${})`)
+    // return await this.base.getOneBase(req);
   }
   @Override('getManyBase')
   // @UseGuards(AuthGuard, ACGuard)

@@ -168,6 +168,13 @@ export class User extends Base {
     book => book.favoritesBy,
   )
   favorites: Book[];
+
+  @ManyToMany(
+    type => Book,
+    book => book.items,
+  )
+  @JoinTable()
+  recentView: Book[];
   @BeforeInsert()
   async hashPassword() {
     const saltRounds = 12;

@@ -186,4 +186,13 @@ export class Book extends Base {
   )
   @JoinTable()
   favoritesBy: User[];
+
+  @ManyToMany(
+    type => User,
+    user => user.recentView,
+  )
+  @JoinTable({
+    name: 'recent_book',
+  })
+  items: Book[];
 }
