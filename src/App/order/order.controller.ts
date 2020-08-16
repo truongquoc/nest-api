@@ -88,15 +88,6 @@ export class OrderController extends BaseController<Order> {
 
     dto.orderItems.forEach((order, index) => {
       const data = orderItem.find(item => item.id == order['id']);
-      // console.log(data);
-
-      // data['prices'].forEach(price => {
-      //   console.log(price);
-      // });
-
-      // if(order['format'] == 'f1') {
-
-      // }
 
       const found = data.prices.find(
         element => element.format == order['format'],
@@ -126,6 +117,10 @@ export class OrderController extends BaseController<Order> {
 
       await manager.query(
         `INSERT INTO order_item values(${item['quantity']}, ${orderOne.prices[0].price},${orderdata[0].id},${orderOne.id})`,
+      );
+      await this.bookRepository.update(
+        { id: item['id'] },
+        { orderNumber: orderOne.orderNumber + 1 },
       );
     });
 

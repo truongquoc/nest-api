@@ -35,14 +35,14 @@ import { ApiTags } from '@nestjs/swagger';
     type: Book,
   },
   params: {
-    id: {
-      type: 'number',
-      field: 'id',
-      primary: true,
-    },
     slug: {
       field: 'slug',
       type: 'string',
+      primary: true,
+    },
+    id: {
+      type: 'number',
+      field: 'id',
       primary: true,
     },
   },

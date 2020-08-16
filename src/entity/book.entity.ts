@@ -139,6 +139,9 @@ export class Book extends Base {
   @Column({ type: 'text', nullable: false })
   image: string;
 
+  @Column({ type: 'int', nullable: true, default: 0 })
+  orderNumber: number;
+
   @ManyToMany(
     type => Tag,
     tag => tag.book,

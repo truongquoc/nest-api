@@ -4629,7 +4629,9 @@ export default class implements Seeder {
       },
     ];
     for (let index = 0; index < books.length; index++) {
-      const data = priceRepository.create(price[1]);
+      const data = priceRepository.create(
+        price[Math.floor(Math.random() * 30)],
+      );
       await priceRepository.save(data);
       await factory(Book)({ payload: books[index], price: data }).create();
     }
