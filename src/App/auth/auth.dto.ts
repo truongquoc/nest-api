@@ -24,7 +24,7 @@ export class LoginDTO {
     type: String,
     description: 'password',
     required: true,
-    example: '123456',
+    example: '12345678',
   })
   password: string;
 }
@@ -67,4 +67,18 @@ export class RegisterDTO {
 
   @ApiProperty({ type: Date, description: 'Birthday' })
   birthday: string;
+}
+
+export class ChangePwdDTO {
+  @ApiProperty({
+    example: '12345678',
+  })
+  @IsString()
+  oldPassword: string;
+
+  @ApiProperty({
+    example: 'admin',
+  })
+  @IsString()
+  password: string;
 }

@@ -33,6 +33,7 @@ import { Tag } from './tag.entity';
 import { Address } from './address.entity';
 import { Order } from './order.entity';
 import { Comment } from './comment.entity';
+import { Book } from './book.entity';
 const { CREATE, UPDATE } = CrudValidationGroups;
 export class Name {
   @IsString({ always: true })
@@ -162,6 +163,11 @@ export class User extends Base {
   )
   comments: Comment[];
 
+  @ManyToMany(
+    type => Book,
+    book => book.favoritesBy,
+  )
+  favorites: Book[];
   @BeforeInsert()
   async hashPassword() {
     const saltRounds = 12;

@@ -34,14 +34,23 @@ import { OrderItemRepository } from './orderItem.repository';
   },
   params: {
     id: {
-      type: 'uuid',
+      type: 'number',
       field: 'id',
       primary: true,
     },
   },
   query: {
-    filter: [],
-    join: {},
+    join: {
+      orderItems: {
+        eager: true,
+      },
+      'orderItems.order': {
+        eager: true,
+      },
+      user: {
+        eager: true,
+      },
+    },
   },
 })
 @ApiTags('v1/orders')

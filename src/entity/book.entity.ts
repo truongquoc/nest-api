@@ -26,6 +26,7 @@ import { Tag } from './tag.entity';
 import { OrderItem } from './order_item.entity';
 import { Rank } from './rank.entity';
 import { Comment } from './comment.entity';
+import { User } from './user.entity';
 const { CREATE, UPDATE } = CrudValidationGroups;
 @Entity('books')
 export class Book extends Base {
@@ -178,4 +179,11 @@ export class Book extends Base {
     comment => comment.book,
   )
   comments: Comment[];
+
+  @ManyToMany(
+    type => User,
+    user => user.favorites,
+  )
+  @JoinTable()
+  favoritesBy: User[];
 }
