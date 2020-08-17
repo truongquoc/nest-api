@@ -229,8 +229,14 @@ export class BooksController extends BaseController<Book> {
     if (user) {
       const manager = getManager();
       const recently = await manager.query(
-        `INSERT INTO recent_book values('${book.id}', '${user.id}')`,
+        `Select * from recent_book Where BookId = ${book.id} and UserId='${user.id}'`,
       );
+      console.log(recently.length);
+      if (recently.length == 0) {
+        const Addrecently = await manager.query(
+          `INSERT INTO recent_book values('${book.id}', '${user.id}')`,
+        );
+      }
     }
 
     return book;
@@ -372,5 +378,22 @@ export class BooksController extends BaseController<Book> {
     await this.bookRepository.save(result);
 
     return { favorite: true };
+  }
+
+  @Get('recent/book')
+  @UseGuards(RolesGuard, ACGuard)
+  async getRecent(@UserSigned() user): Promise<Book[]> {
+    if (user) {
+      const manager = getManager();
+      const map = [];
+      const recently = await manager.query(
+        `Select * from recent_book where UserId='${user.id}'`,
+      );
+      recently.forEach(el => {
+        map.push(el.bookid);
+      });
+      const data = await this.bookRepository.findByIds(map);
+      return data;
+    }
   }
 }

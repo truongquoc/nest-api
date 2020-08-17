@@ -193,6 +193,14 @@ export class Book extends Base {
   )
   @JoinTable({
     name: 'recent_book',
+    joinColumn: {
+      name: 'bookid',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'userid',
+      referencedColumnName: 'id',
+    },
   })
   items: Book[];
 }
